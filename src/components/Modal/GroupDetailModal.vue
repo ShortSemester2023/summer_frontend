@@ -147,7 +147,7 @@ export default {
         error => {
           this.$bus.emit('message', {
             title: '退出群聊失败',
-            content: '你是群主，不可退出群聊，可以选择解散该群',
+            content: '',
             time: 2000
           })
         }

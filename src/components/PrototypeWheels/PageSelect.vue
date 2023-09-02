@@ -1,6 +1,6 @@
 <template>
 	<ul>
-		<li @click="backToProject">返回</li>
+		<li v-if="!($route.path.indexOf('preview') !== -1)" @click="backToProject">返回</li>
 		<li 
 			v-for="page in pages" 
 			:key="page.id"
@@ -36,6 +36,7 @@ export default {
 			}
 		},
 		backToProject() {
+			
 			this.$router.push(`/project/${this.projectId}/page`)
 		}
 	}

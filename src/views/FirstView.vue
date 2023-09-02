@@ -1,29 +1,27 @@
 <template>
   <Guide v-if="isNew"/>
-  <div class="first-view">
-    <div class="all-projects">全部项目</div>
-    <!-- 暂未拥有项目的 UI 可以在拓展 -->
-    <div class="no-project-hint" v-if="projectData.length === 0">暂未拥有项目</div>
-    <div class="project-cards-container" v-else>
-      <div style="margin-right: 45px; margin-bottom: 30px" v-for="project in projectData" :key="project.id"
-        @click="jumpToProject(project.id, project.teamId)">
-        <ProjectListItem :data="project"></ProjectListItem>
-      </div>
+  <div v-if="!hasTeam">
+    <div class="container-card">
+      <NewProject what="团队" @click="showCreateTeamModal = true"></NewProject>
     </div>
   </div>
+  <CreateTeamModal :show="showCreateTeamModal" @close="showCreateTeamModal = false" />
 </template>
 
 <script>
 import ProjectListItem from '../components/ListItem/team/ProjectListItem.vue'
 import Guide from '../components/Guide/Guide.vue'
+import NewProject from '../components/ListItem/team/NewProject.vue';
+import CreateTeamModal from '../components/Modal/CreateTeamModal.vue';
 export default {
   name: 'FirstView',
-  components: { ProjectListItem, Guide },
+  components: { ProjectListItem, Guide, NewProject, CreateTeamModal },
   data() {
     return {
       projectData: [],
       isNew: false,
-      hasTeam: false
+      hasTeam: false,
+      showCreateTeamModal: false
     };
   },
   created() {
@@ -79,26 +77,11 @@ export default {
 }
 </script>
 <style scoped>
-.first-view {
-  height: calc(90vh - 70px);
-  padding: 30px 50px;
-  padding-top: 15px;
-}
-
-.all-projects {
-  font-size: 50px;
-  font-weight: bold;
-  color: rgba(199, 29, 35, 1);
-  margin-bottom: 10px;
-  padding-left: 65px;
-}
-
-.project-cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  /* max-height: 600px; */
-  /* overflow-y: auto; */
-  padding-left: 50px;
+.container-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 </style>

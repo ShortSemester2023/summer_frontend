@@ -1,6 +1,6 @@
 <template>
-  <div><PageSelectVue/></div>
-  <div class="container">
+  <div class="page-select container">
+    <PageSelect />
     <div id="gjs"></div>
   </div>
 </template>
@@ -17,7 +17,7 @@ import CodePlugin from 'grapesjs-custom-code';
 import Type from 'grapesjs-typed';
 import ExportPlugin from 'grapesjs-plugin-export'; //导出html和css
 import ScriptPlugin from 'grapesjs-script-editor'; //js代码编辑
-import PageSelectVue from './PageSelect.vue';
+import PageSelect from './PageSelect.vue';
 
 export default {
     data() {
@@ -29,35 +29,23 @@ export default {
         
     },
     components: {
-      PageSelectVue,
+      PageSelect,
     },
     mounted() {
       this.pageId = this.$route.params.protoId
+      this.$watch('$route.params', (newVal, oldVal) => {
+        this.pageId = newVal.protoId
+        this.$http.get(`http://43.138.14.231/projects/${this.pageId}`).then((response) => {
+          this.editor.loadProjectData(response.data.data)
+        })
+      })
       this.initEditor();
       this.banButton();
       this.setPreview();
-      this.$watch(
-        () => this.$route.params,
-        () => {
-          this.pageId = this.$route.params.protoId
-          this.$http.get(`http://43.138.14.231/projects/${this.pageId}`).then((response) => {
-            this.editor.loadProjectData(response.data)
-          })
-        },
-        { immediate: true }
-      )
       setTimeout(() => {
         const prv = document.querySelector('#gjs > div.gjs-editor.gjs-one-bg.gjs-two-color > span')
         prv.style.display = 'none'
-      }, 1000)
-      this.ws = new WebSocket(`ws://43.138.14.231/ws/page/${this.pageId}/`)
-      this.ws.onmessage(() => {
-        alert('close')
-      })
-      this.$bus.on('close', () => this.ws.send(JSON.stringify({})))
-    },
-    unmounted() {
-      this.$bus.off('close')
+      }, 2000)
     },
     methods: {
       initEditor() {
@@ -84,12 +72,10 @@ export default {
 							  urlStore: `http://43.138.14.231/projects/${this.pageId}/`,
                 fetchOptions: opts => (opts.method === 'POST' ?  { method: 'PATCH' } : {}),
                 onStore: data => {
-                  data['size'] = {
-                    height: this.canvasHeight,
-                    width: this.canvasWidth,
-                  }
-                  data['Devices'] = this.Devices
                   // this.ws.send(JSON.stringify(data))
+                  if (data.pages.length == 0) {
+                    data.pages.push({})
+                  }
                   return {
                     id: this.pageId,
                     data,
@@ -102,9 +88,11 @@ export default {
                   }
                 },
                 onLoad: result => {
-                  this.Devices = result.Devices
-                  this.canvasHeight = result.size.height
-                  this.canvasWidth = result.size.width
+                  if (result.Devices && result.size) {
+                    this.Devices = result.Devices
+                    this.canvasHeight = result.size.height
+                    this.canvasWidth = result.size.width
+                  }
                   console.log(result)
                   return result.data
                 }

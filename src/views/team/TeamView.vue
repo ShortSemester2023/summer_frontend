@@ -10,9 +10,9 @@
       <li><router-link class="link" :to="`/team/${teamId}/chat`">团队群聊</router-link></li>
     </ul>
     <div>
-      <keep-alive>
+      <!-- <keep-alive> -->
         <RouterView></RouterView>
-      </keep-alive>
+      <!-- </keep-alive> -->
     </div>
   </div>
 </template>

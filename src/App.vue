@@ -6,6 +6,7 @@
   <!-- 消息组件 -->
   <!-- 如果要展示分享链接，这一句代码就必须要加上 -->
   <StylishMessage :show="showMessage" :title="messageTitle" :content="messageContent" />
+  <!-- <TeamInviteConfirm></TeamInviteConfirm> -->
 </template>
 
 <script setup>
@@ -13,6 +14,7 @@ import { ref, getCurrentInstance } from 'vue'
 import DocumentView from './components/DocumentWheels/DocumentView.vue'
 import TopNav from './components/TopNav/TopNav.vue'
 import StylishMessage from './components/Stylish/StylishMessage.vue'
+import TeamInviteConfirm from './views/TeamInviteConfirm.vue'
 
 import { useStore } from 'vuex'
 
@@ -34,6 +36,25 @@ instance.proxy.$bus.on('message', (data) => {
     },1000)
   }, data.time)
 })
+
+const ws = new WebSocket('ws://43.138.14.231:9000/ws/page/view/');
+instance.proxy.$bus.on('closeShareRequest', (pageId) => {
+  ws.send(JSON.stringify({"page_id":pageId}))
+})
+ws.onmessage = (messageEvent) => {
+  const data = JSON.parse(messageEvent.data)
+  if (instance.proxy.$route.path.indexOf('preview') !== -1) {
+    if (data.project_id == instance.proxy.$route.params.projectId) {
+      instance.proxy.$bus.emit('message', {
+        title: '原型预览链接失效',
+        content: '',
+        time: 3000
+      })
+      window.opener = null
+      window.open('about:blank', '_top').close()
+    }
+  }
+}
 
 const store = useStore()
 store.commit('setIsLoggedIn', getCurrentInstance().proxy.$cookies.get('user_id') ? true : false)
