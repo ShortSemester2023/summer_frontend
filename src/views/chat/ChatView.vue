@@ -18,7 +18,7 @@
 			<CombineTransmit :show="message.show" :combineMessageList="message.combineMessageList"
 				@close="closeCombineTransmit"></CombineTransmit>
 		</div>
-		<GroupDetailModal :groupId="currentRoomId"/>
+		<GroupDetailModal :groupId="currentRoomId" />
 	</div>
 </template>
 
@@ -91,15 +91,15 @@ export default {
 			this.allRooms = this.rooms
 			// @all && last_message
 			for (let i = 0; i < this.rooms.length; i++) {
-					if (this.rooms[i].identity != 'member') {
-						this.rooms[i].users = [
-							{
-								_id: '0',
-								username: '所有人'
-							},
-							...this.rooms[i].users
-						]
-					}
+				if (this.rooms[i].identity != 'member') {
+					this.rooms[i].users = [
+						{
+							_id: '0',
+							username: '所有人'
+						},
+						...this.rooms[i].users
+					]
+				}
 				// WebSocket
 				this.ws[i] = new WebSocket(`ws://43.138.14.231:9000/ws/chat/group/${this.rooms[i].roomId}/${this.currentUserId}/`)
 				this.ws[i].onmessage = (messageEvent) => {
@@ -310,6 +310,18 @@ export default {
 		this.$bus.on('roomOption', data => this.teamws.send(data))
 
 		this.$refs.chat.shadowRoot.appendChild(style)
+		// const doc = this.$refs.chat.shadowRoot
+		// setTimeout(() => {
+		// 	let temp = doc.querySelector('.vac-rooms-empty')
+		// 	if (temp) {
+		// 		temp.innerHTML = '<div>暂无聊天室</div>'
+		// 	}
+		// 	temp = doc.querySelector('.vac-col-messages .vac-container-center.vac-room-empty')
+		// 	if (temp) {
+		// 		temp.innerHTML = '<div>未选中聊天室</div>'
+		// 	}
+		// }, 1)
+
 		// const newHTML = this.$refs.chat.shadowRoot.innerHTML.replace('placeholder="Search"', 'placeholder="检索"')
 		// console.log(newHTML)
 		// setTimeout(() => {
@@ -420,6 +432,7 @@ export default {
 			if (this.$refs.chat) {
 				doc = this.$refs.chat.shadowRoot
 				let list = doc.querySelector('.vac-menu-list')
+
 				if (list) {
 					if (list.children.length === 2) {
 						list.children[0].children[0].innerHTML = '引用'
@@ -599,8 +612,8 @@ export default {
 			this.rooms[i].index = 0
 			// @
 			for (let j = 0; j < data.mentioned_users.length; j++) {
-				if ((data.mentioned_users[j]._id == this.currentUserId || data.mentioned_users[j]._id == '0') 
-				&& message.sender.user.id != parseInt(this.currentUserId)) {
+				if ((data.mentioned_users[j]._id == this.currentUserId || data.mentioned_users[j]._id == '0')
+					&& message.sender.user.id != parseInt(this.currentUserId)) {
 					let formData = new FormData()
 					formData.append('group_message', message.id)
 					formData.append('receiver', this.currentUserId)
@@ -702,7 +715,7 @@ export default {
 			// @
 			for (let j = 0; j < data.mentioned_users.length; j++) {
 				if ((data.mentioned_users[j]._id == this.currentUserId || data.mentioned_users[j]._id == '0')
-				&& message.sender.user.id != parseInt(this.currentUserId)) {
+					&& message.sender.user.id != parseInt(this.currentUserId)) {
 					let formData = new FormData()
 					formData.append('group_message', message.id)
 					formData.append('receiver', this.currentUserId)
@@ -861,7 +874,6 @@ export default {
 					const doc = this.$refs.chat.shadowRoot
 					const container = doc.querySelector('#messages-list')
 					const msg = doc.querySelector(`#messages-list>div>div>span>div:nth-child(${i})`)
-					
 					if (container && msg) {
 						// console.log('msg: ', msg.getBoundingClientRect().top, msg.getBoundingClientRect().bottom)
 						// console.log('con: ', container.getBoundingClientRect().top, container.getBoundingClientRect().bottom)
@@ -873,10 +885,6 @@ export default {
 							left: 0,
 							behavior: 'smooth'
 						})
-						// msg.querySelector('.vac-message-card').classList.add('blink-message')
-						// setTimeout(() => {
-						// 	msg.querySelector('.vac-message-card').classList.remove('blink-message')
-						// }, 1500);
 					}
 				}
 			}, 500);
@@ -951,7 +959,7 @@ export default {
 					fileContent: message.file_content,
 					isPravite: message.group_is_private,
 					groupName: message.group_name,
-					isCombined: message.forward_messages.length	== 0 ? false : true
+					isCombined: message.forward_messages.length == 0 ? false : true
 				}))
 				combinedMessage.sort((a, b) => a.id - b.id)
 				this.openNewCombineTransmit(combinedMessage)
@@ -959,17 +967,17 @@ export default {
 		},
 		// 打开一个合并转发消息的模态框
 		openNewCombineTransmit(message) {
-      const newCombineTransmit = {
-        show: true,
-        combineMessageList: message, // 设置合并消息列表
-      };
+			const newCombineTransmit = {
+				show: true,
+				combineMessageList: message, // 设置合并消息列表
+			};
 			console.log(message);
-      this.combineTransmitInstances.push(newCombineTransmit);
-    },
+			this.combineTransmitInstances.push(newCombineTransmit);
+		},
 		// 关闭一个合并转发消息的模态框
 		closeCombineTransmit() {
 			this.combineTransmitInstances.pop()
-    },
+		},
 
 		handleCreateRoom(data) {
 			const group = data.group_data
@@ -983,7 +991,7 @@ export default {
 
 		createRoom(group) {
 			for (let j = 0; j < this.rooms.length; j++) {
-					this.rooms[j].index--
+				this.rooms[j].index--
 			}
 			const room = {
 				index: 0,

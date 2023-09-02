@@ -92,7 +92,6 @@ export default {
 <style scoped>
 hr {
   color: grey; /* 修改水平线的颜色 */
-  width: 90%;
   margin: 5px 0;       /* 修改水平线的上下边距 */
   text-align: right;
 }
@@ -136,7 +135,7 @@ hr {
 .user-avatar {
   height: 50px;
   width: 50px;
-  border-radius: 5px;
+  border-radius: 50%;
 }
 
 
