@@ -128,41 +128,79 @@ import 'animate.css'
 import PageSelect from './PageSelect.vue';
 
 export default {
-	name: 'GrapesEditor',
-	components: {
-		PageSelect
-	},
-	mounted() {
-		this.pageId = this.$route.params.protoId
+  name: 'GrapesEditor',
+  components: {
+    PageSelect
+  },
+  mounted() {
+    this.pageId = this.$route.params.protoId
     this.$watch('$route.params', (newVal, oldVal) => {
       this.$http.get(`http://43.138.14.231/projects/${newVal.protoId}`).then((response) => {
         //保存一下size-setter
-        let sizeSetter =  document.querySelector('#size-setter')
+        let sizeSetter = document.querySelector('#size-setter')
         document.body.appendChild(sizeSetter)
+        //清除之前的eventlistener
+        document.body.removeEventListener('click', this.handleSelectChange)
+        document.querySelector('iframe').contentWindow.document.body.removeEventListener('click', this.handleSelectChange)
+        document.querySelector('iframe').contentWindow.document.removeEventListener('scroll', this.handleScroll)
+        document.querySelector('iframe').contentWindow.document.removeEventListener('keydown', this.handleSelectChange)
+        document.removeEventListener('scroll', this.handleScroll)
         // const newData = response.data.data
         this.pageId = newVal.protoId
         this.initEditor();
-		    this.addBlock();
+        this.addBlock();
         this.clearCanvas();
-        let topPanel = document.querySelector('.gjs-pn-panel.gjs-pn-devices-c.gjs-one-bg.gjs-two-color .gjs-pn-buttons')
-        topPanel.appendChild(sizeSetter)
-        // this.editor.loadProjectData(newData)
+        this.editor.on('load', () => {
+          console.log('加载完毕')
+          let topPanel = document.querySelector('.gjs-pn-panel.gjs-pn-devices-c.gjs-one-bg.gjs-two-color .gjs-pn-buttons')
+          topPanel.appendChild(sizeSetter)
+          //添加新的的监听事件
+          document.body.addEventListener('click', this.handleSelectChange)
+          document.querySelector('iframe').contentWindow.document.body.addEventListener('click', this.handleSelectChange)
+          document.querySelector('iframe').contentWindow.document.addEventListener('scroll', this.handleScroll)
+          document.querySelector('iframe').contentWindow.document.addEventListener('keydown', this.handleSelectChange)
+          document.addEventListener('scroll', this.handleScroll)
+        })
       })
     })
-      this.initEditor();
-		  this.addBlock();
-      this.clearCanvas();
+    this.initEditor();
+    this.addBlock();
+    this.clearCanvas();
+    this.editor.on('load', () => {
+      console.log('加载完毕')
       let topPanel = document.querySelector('.gjs-pn-panel.gjs-pn-devices-c.gjs-one-bg.gjs-two-color .gjs-pn-buttons')
       let sizeSetter = document.querySelector('#size-setter')
       topPanel.appendChild(sizeSetter)
-		this.ws = new WebSocket(`ws://43.138.14.231:9000/ws/page/${this.pageId}/`)
-		// this.ws.onmessage = (message) => {
-		// 	const data = JSON.parse(message.data).data
-		// 	if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
-		// 		this.editor.loadProjectData(data)
-		// 	}
-		// }
-    
+      //此处为监听iframe外部中gjs内部和外部事件
+      // document.body.addEventListener('click', (e) => {
+      //   if (document.getElementById('gjs').contains(e.target)) {
+      //     console.log('重合')
+      //   }
+      //   else {
+      //     console.log('不重合')
+      //   }
+      // }
+      // )
+      document.body.addEventListener('click', this.handleSelectChange)
+      document.querySelector('iframe').contentWindow.document.body.addEventListener('click', this.handleSelectChange)
+      document.querySelector('iframe').contentWindow.document.addEventListener('scroll', this.handleScroll)
+      document.querySelector('iframe').contentWindow.document.addEventListener('keydown', this.handleSelectChange)
+      document.addEventListener('scroll', this.handleScroll)
+
+    })
+    this.ws = new WebSocket(`ws://43.138.14.231:9000/ws/page/${this.pageId}/`)
+
+
+    //必须在editor加载完之后才添加点击事件监听
+
+    // window.removeEventListener()
+    // this.ws.onmessage = (message) => {
+    // 	const data = JSON.parse(message.data).data
+    // 	if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
+    // 		this.editor.loadProjectData(data)
+    // 	}
+    // }
+
     //设置默认大小
     // this.closeCategory();
   },
@@ -171,8 +209,7 @@ export default {
       ws: '',
       pageId: null,
       pageName: 'page1',
-
-
+      selectedIds: undefined,//当前用户选中的元素的id
       pagesNum: 1,
       canvasHeight: '1000',
       canvasWidth: '1000',
@@ -1472,38 +1509,39 @@ button {
               urlLoad: `http://43.138.14.231/projects/${this.pageId}/`,
               urlStore: `http://43.138.14.231/projects/${this.pageId}/`,
               // urlLoad: `http://localhost:3000/projects/${this.pageId}`,
-							// urlStore: `http://localhost:3000/projects/${this.pageId}`,
-              fetchOptions: opts => (opts.method === 'POST' ?  { method: 'PATCH' } : {}),
-							// urlLoad: `http://localhost:3000/projects/1`,
-							// urlStore: `http://localhost:3000/projects/1`,
-							// The `remote` storage uses the POST method when stores data but
-							// the json-server API requires PATCH.
-	
-							onStore: data => {  
+              // urlStore: `http://localhost:3000/projects/${this.pageId}`,
+              fetchOptions: opts => (opts.method === 'POST' ? { method: 'PATCH' } : {}),
+              // urlLoad: `http://localhost:3000/projects/1`,
+              // urlStore: `http://localhost:3000/projects/1`,
+              // The `remote` storage uses the POST method when stores data but
+              // the json-server API requires PATCH.
+
+              onStore: data => {
                 console.log('store')
+                this.updateCursorPlace(this.selectedId)//自动保存时更新id
                 if (data.pages.length == 0) {
                   data.pages.push({})
                 }
                 this.ws.send(JSON.stringify(data))
-								return {
-									id: this.pageId,
-									data,
-									// //存储画布宽高
-									size: {
-										height: this.canvasHeight,
-										width: this.canvasWidth,
-									},
-									Devices: this.Devices,
-								}
-							},
-							onLoad: result => {
+                return {
+                  id: this.pageId,
+                  data,
+                  // //存储画布宽高
+                  size: {
+                    height: this.canvasHeight,
+                    width: this.canvasWidth,
+                  },
+                  Devices: this.Devices,
+                }
+              },
+              onLoad: result => {
                 if (result.Devices && result.size) {
                   this.Devices = result.Devices
                   this.canvasHeight = result.size.height
                   this.canvasWidth = result.size.width
                 }
-								return result.data
-							}
+                return result.data
+              }
             }
           }
         },
@@ -1675,12 +1713,118 @@ textarea {
         }
       })
 
-    }
+    },
+    //操作分为change(当前节点位置宽高等改变、当前点击的元素改变)和remove(选中的节点被删除了，用户点击了gjs以外的位置)
+    //1需要监听iframe外部，gjs内部事件并响应，id删除
+    //2需要监听iframe内部元素，id不变、改变或删除
+    //3需要监听gjs外部元素，id删除
+    //store时id可能不变、改变或删除 改变情况由click负责，不变或删除直接由onload后判断对应元素是否存在即可
+    //不监听键盘事件
+    //需要传递第二个参数：id是否改变/id删除？
+    handleSelectChange(e, command = 'change') {
+      if (document.getElementById('gjs').contains(e.target)) {
+        console.log('位于gjs内')//
+        this.selectedId = undefined//太麻烦了，还是非选中吧
+      }
+      else if (document.body.contains(e.target)) {
+        console.log('位于gjs外')
+        this.selectedId = undefined//点击外部一定为非选中状态
+      }
+      else {
+        this.selectedId = e.target.id//只有这时候刷新？
+      }
+      this.updateCursorPlace(this.selectedId)
+    },
+    //元素滚动，此时只需要刷新位置
+    handleScroll(e) {
+      this.updateCursorPlace(this.selectedId)
+    },
+    updateCursorPlace(id) {
+      //刷新光标位置
+      // 首先将前面的悬浮框和框框清除
+      document.querySelector('.selection-tooltip-container')?.remove()
+      document.querySelector('.selection-tooltip-text')?.remove()
+      document.querySelector('.selection-wrapper')?.remove()
+      if (id === undefined || id === '') {//这时什么都不做？
+        return
+      }
+      else {
+        // 这里可以处理用户在 iframe 内点击内容的逻辑
+        console.log('用户点击了 iframe 内的内容');
+        const element = document.querySelector('iframe').contentWindow.document.body.querySelector(`#${id}`)
+        if (element) {
+          // 创建悬浮框容器
+          const tooltipContainer = document.createElement('div');
+          tooltipContainer.className = `selection-tooltip-container`;//TODO:类名要改为独一无二
+          tooltipContainer.style.pointerEvents = 'none'//设置不能被选中
+
+          tooltipContainer.style.backgroundColor = 'rgb(199, 29, 35)';
+          tooltipContainer.style.color = 'white';
+
+          // 设置悬浮框内容
+          const tooltipText = document.createElement('div');
+          tooltipText.className = `selection-tooltip-text`;//TODO:类名要改为独一无二
+          tooltipText.textContent = '这是一个tooltip';
+
+          // 将悬浮框内容添加到容器
+          tooltipContainer.appendChild(tooltipText);
+
+          // 将悬浮框容器添加到 body 的直接子元素
+          document.body.appendChild(tooltipContainer);
+
+          // 定位悬浮框，底部与元素顶部对齐，左边界与元素左边界对齐
+          //这块可能要改改,加上iframe的高度差
+          const elementRect = {
+            left: element.getBoundingClientRect().left + document.querySelector('iframe').getBoundingClientRect().left,
+            top: element.getBoundingClientRect().top + document.querySelector('iframe').getBoundingClientRect().top,
+            width: element.getBoundingClientRect().width,
+            height: element.getBoundingClientRect().height
+          }
+          //这里因为直接绑在body上面，所以不需要
+          const tooltipRect = tooltipContainer.getBoundingClientRect();
+
+          tooltipContainer.style.position = 'absolute';
+          tooltipContainer.style.left = elementRect.left + 'px';
+          tooltipContainer.style.zIndex = 1;
+          tooltipContainer.style.top = elementRect.top - tooltipRect.height + 'px';
+
+          //接下来再设置一个方框
+          // 创建一个包裹元素的容器 这里为了方便直接设为borderbox
+          const wrapperDiv = document.createElement('div');
+          wrapperDiv.className = `selection-wrapper`;//TODO:类名要改为独一无二
+          wrapperDiv.style.boxSizing = 'border-box'
+          wrapperDiv.style.pointerEvents = 'none'//穿透元素
+          // 获取被包裹元素的位置和大小
+
+          // 设置包裹容器的样式，使其刚好包裹住指定元素
+          wrapperDiv.style.position = 'absolute';
+          wrapperDiv.style.zIndex = 1;
+          wrapperDiv.style.left = elementRect.left + 'px';
+          wrapperDiv.style.top = elementRect.top + 'px';
+          wrapperDiv.style.width = elementRect.width + 'px';
+          wrapperDiv.style.height = elementRect.height + 'px';
+
+          // 添加包裹容器到 body
+          document.body.appendChild(wrapperDiv);
+
+          // 为包裹容器设置边框样式,颜色和tooltip保持一致
+          wrapperDiv.style.border = `5px solid rgb(199,29,35)`;
+        }
+      }
+    },
+  },
+  beforeUnmount() {
+    document.body.removeEventListener('click', this.handleSelectChange)
+    document.querySelector('iframe').contentWindow.document.body.removeEventListener('click', this.handleSelectChange)
+    document.querySelector('iframe').contentWindow.document.removeEventListener('scroll', this.handleScroll)
+    document.querySelector('iframe').contentWindow.document.removeEventListener('keydown', this.handleSelectChange)
+    document.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
 
-<style scoped>#gjs * {
+<style scoped>
+#gjs * {
   font-family: sans-serif !important;
 }
 
@@ -1971,4 +2115,5 @@ textarea {
 
 :deep(.gjs-title) {
   font-weight: bold;
-}</style>  
+}
+</style>  
