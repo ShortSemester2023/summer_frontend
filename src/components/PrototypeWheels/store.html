@@ -1,0 +1,175 @@
+<div class="gjs-row" id="top-space">
+    <div id="button1">登录</div>
+    <div id="button2">注册</div>
+</div>
+<div class="gjs-row" id="header-row">
+    <div class="gjs-cell" id="left-space"></div>
+    <div class="gjs-cell" id="main-content">
+        <div id="platform-title">学术成果分享平台</div>
+        <div id="platform-subtitle">Make Academia VisiableMake Academia Visiable</div>
+        <div id="search-div">
+            <input type="text" id="search-input" placeholder="Search" />
+            <button type="button" id="search-button">搜索</button>
+        </div>
+    </div>
+    <div class="gjs-cell" id="right-space"></div>
+</div>
+<div id="tab-section">
+    <div role="tablist" class="tab-container">
+        <div role="tab" aria-controls="tab1-content" id="tab1" class="tab">
+            <span id="tab1-label">业界精英</span>
+        </div>
+        <div role="tab" aria-controls="tab2-content" id="tab2" class="tab">
+            <span id="tab2-label">学术论文</span>
+        </div>
+        <div role="tab" aria-controls="tab3-content" id="tab3" class="tab">
+            <span id="tab3-label">科技前沿</span>
+        </div>
+        <div role="tab" aria-controls="tab4-content" id="tab4" class="tab">
+            <span id="tab4-label">最新成果</span>
+        </div>
+        <div role="tab" aria-controls="tab5-content" id="tab5" class="tab">
+            <span id="tab5-label">新闻资讯</span>
+        </div>
+    </div>
+    <div class="gjs-row" id="image-row">
+        <div class="gjs-cell" id="image1-cell">
+            <img id="image1" src="/src/assets/template1-4.jpg" />
+        </div>
+        <div class="gjs-cell" id="image2-cell">
+            <img id="image2" src="/src/assets/template1-3.jpg" />
+        </div>
+        <div class="gjs-cell" id="image3-cell">
+            <img id="image3" src="/src/assets/template1-2.jpg" />
+        </div>
+        <div class="gjs-cell" id="image4-cell">
+            <img id="image4" src="/src/assets/template1-5.jpg" />
+        </div>
+        <div class="gjs-cell" id="image5-cell">
+            <img id="image5" src="/src/assets/template1-1.jpg" />
+        </div>
+    </div>
+    <div class="tab-contents">
+        <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" hidden class="tab-content">
+        </div>
+        <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" hidden class="tab-content">
+        </div>
+        <div role="tabpanel" id="tab3-content" aria-labelledby="tab3" hidden class="tab-content">
+        </div>
+        <div role="tabpanel" id="tab4-content" aria-labelledby="tab4" hidden class="tab-content">
+        </div>
+    </div>
+</div>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #c2cedc;
+    }
+
+    #button1 {
+        margin-top: 8px;
+        float: right;
+        margin-right: 20px;
+        padding: 10px;
+    }
+
+    #button2 {
+        margin-top: 8px;
+        float: right;
+        margin-right: 20px;
+        padding: 10px;
+    }
+
+    #top-space {
+        height: 60px;
+    }
+
+    #header-row {
+        background-color: #686789;
+        color: #ffffff;
+        padding: 50px;
+        display: flex;
+    }
+
+    #left-space,
+    #right-space {
+        flex: 1;
+    }
+
+    #main-content {
+        flex: 3;
+        text-align: center;
+    }
+
+    #platform-title {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+
+    #platform-subtitle {
+        margin-bottom: 20px;
+    }
+
+    #search-div {
+        display: flex;
+        justify-content: center;
+    }
+
+    #search-input {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        min-width: 200px;
+
+    }
+
+    #search-button {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px 15px;
+        background-color: #555;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+
+    }
+
+    .tab-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 50px;
+    }
+
+    .tab {
+        cursor: pointer;
+        padding: 5px 20px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f4f4f4;
+    }
+
+    .tab:hover {
+        background-color: #ddd;
+    }
+
+    #image-row {
+        margin-top: 30px;
+        display: flex;
+    }
+
+    .gjs-cell {
+        flex: 1;
+        padding: 10px;
+    }
+
+    img {
+        max-width: 100%;
+        display: block;
+        margin: 0 auto;
+    }
+</style>

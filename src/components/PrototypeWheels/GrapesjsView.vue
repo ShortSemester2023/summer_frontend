@@ -168,6 +168,8 @@ export default {
       ws: '',
       pageId: null,
       pageName: 'page1',
+
+
       pagesNum: 1,
       canvasHeight: '1000',
       canvasWidth: '1000',
@@ -470,181 +472,230 @@ export default {
               label: '学术成果分享平台',
               category: '原型模板',
               media: `<img src = '/src/assets/zixunfabu.png' style="height:100%;width:100%">`,
-              content: `
-          <div class="gjs-row" id="top-space">
-            <div id="button1">登录</div>
-            <div id="button2">注册</div>
-          </div>
-          <div class="gjs-row" id="header-row">
-            <div class="gjs-cell" id="left-space"></div>
-          <div class="gjs-cell" id="main-content">
-          <div id="platform-title">学术成果分享平台</div>
-          <div id="platform-subtitle">Make Academia VisiableMake Academia Visiable</div>
-          <div id="search-div">
-            <input type="text" id="search-input" placeholder="Search"/>
-            <button type="button" id="search-button">搜索</button>
-          </div>         
-          </div>
-          <div class="gjs-cell" id="right-space"></div>
-          </div>
-          <div id="tab-section">
-              <div role="tablist" class="tab-container">
-                <div role="tab" aria-controls="tab1-content" id="tab1" class="tab">
-                  <span id="tab1-label">业界精英</span>
+              content: `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学术成果分享平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div id="login-button">登录</div>
+                <div id="register-button">注册</div>
+            </div>
+            <div class="header-content">
+                <h1>学术成果分享平台</h1>
+                <h2>Make Academia Visible</h2>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="搜索">
+                    <button type="button" id="search-button">搜索</button>
                 </div>
-                <div role="tab" aria-controls="tab2-content" id="tab2" class="tab">
-                  <span id="tab2-label">学术论文</span>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul class="tab-container">
+                <li class="tab" data-tab="tab1">业界精英</li>
+                <li class="tab" data-tab="tab2">学术论文</li>
+                <li class="tab" data-tab="tab3">科技前沿</li>
+                <li class="tab" data-tab="tab4">最新成果</li>
+                <li class="tab" data-tab="tab5">新闻资讯</li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="image-section">
+        <div class="container">
+            <div class="image-grid">
+                <div class="image">
+                    <img src="/src/assets/template1-4.jpg" alt="Image 1">
                 </div>
-                <div role="tab" aria-controls="tab3-content" id="tab3" class="tab">
-                  <span id="tab3-label">科技前沿</span>
+                <div class="image">
+                    <img src="/src/assets/template1-3.jpg" alt="Image 2">
                 </div>
-                <div role="tab" aria-controls="tab4-content" id="tab4" class="tab">
-                  <span id="tab4-label">最新成果</span>
+                <div class="image">
+                    <img src="/src/assets/template1-2.jpg" alt="Image 3">
                 </div>
-                <div role="tab" aria-controls="tab5-content" id="tab5" class="tab">
-                  <span id="tab5-label">新闻资讯</span>
+                <div class="image">
+                    <img src="/src/assets/template1-5.jpg" alt="Image 4">
                 </div>
-              </div>
-              <div class="gjs-row" id="image-row">
-                  <div class="gjs-cell" id="image1-cell">
-                      <img id="image1" src="/src/assets/template1-4.jpg"/>
-                  </div>
-                  <div class="gjs-cell" id="image2-cell">
-                      <img id="image2" src="/src/assets/template1-3.jpg"/>
-                  </div>
-                  <div class="gjs-cell" id="image3-cell">
-                      <img id="image3" src="/src/assets/template1-2.jpg"/>
-                  </div>
-                  <div class="gjs-cell" id="image4-cell">
-                      <img id="image4" src="/src/assets/template1-5.jpg"/>
-                  </div>
-                  <div class="gjs-cell" id="image5-cell">
-                      <img id="image5" src="/src/assets/template1-1.jpg"/>
-                  </div>
-              </div>
-              <div class="tab-contents">
-                  <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" hidden class="tab-content">
-                  </div>
-                  <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" hidden class="tab-content">
-                  </div>
-                  <div role="tabpanel" id="tab3-content" aria-labelledby="tab3" hidden class="tab-content">
-                  </div>
-                  <div role="tabpanel" id="tab4-content" aria-labelledby="tab4" hidden class="tab-content">
-                  </div>
-              </div>
-          </div>
-          <style>
-          body {
-              font-family: 'Arial', sans-serif;
-              margin: 0;
-              padding: 0;
-              background-color: #c2cedc;
-          }
+                <div class="image">
+                    <img src="/src/assets/template1-1.jpg" alt="Image 5">
+                </div>
+            </div>
+        </div>
+    </section>
 
-          #button1 {
-            margin-top:8px;
-            float:right;
-            margin-right:20px;
-            padding:10px;
-          }
+    <section class="tab-content" id="tab1-content"></section>
+    <section class="tab-content" id="tab2-content"></section>
+    <section class="tab-content" id="tab3-content"></section>
+    <section class="tab-content" id="tab4-content"></section>
+    <section class="tab-content" id="tab5-content"></section>
 
-          #button2 {
-            margin-top:8px;
-            float:right;
-            margin-right:20px;
-            padding:10px;
-          }
-          #top-space {
-              height: 60px;
-          }
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 学术成果分享平台</p>
+        </div>
+    </footer>
+</body>
+<style>
+    /* 重置全局样式 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: all 0.5s;
+    }
 
-          #header-row {
-              background-color: #686789;
-              color: #ffffff;
-              padding: 50px;
-              display: flex;
-          }
+    /* 响应式断点 */
+    @media screen and (max-width: 768px) {
+        /* 在这里添加响应式样式 */
+    }
 
-          #left-space, #right-space {
-              flex: 1;
-          }
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #c2cedc;
+    }
 
-          #main-content {
-              flex: 3;
-              text-align: center;
-          }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-          #platform-title {
-              font-size: 30px;
-              margin-bottom: 10px;
-          }
+    /* 头部样式 */
+    header {
+        background-color: #686789;
+        color: #ffffff;
+        padding: 20px 0;
+    }
 
-          #platform-subtitle {
-              margin-bottom: 20px;
-          }
-          #search-div {
-            display: flex;
-            justify-content: center;
-          }
+    .header-top {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
 
-          #search-input {
-            margin-left: 10px;
-            margin-right: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            min-width: 200px;
-            
-          }
+    #login-button,
+    #register-button {
+        margin-top: 8px;
+        margin-right: 20px;
+        padding: 10px;
+        cursor: pointer;
+        color: #ffffff;
+    }
 
-          #search-button {
-            margin-left: 10px;
-            margin-right: 10px;
-            padding: 10px 15px;
-            background-color: #555;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            cursor: pointer;
-             
-          }
+    #login-button:hover,
+    #register-button:hover {
+        background-color: #555;
+    }
 
-          .tab-container {
-              display: flex;
-              justify-content: space-around;
-              margin-top: 50px;
-          }
+    .header-content {
+        text-align: center;
+    }
 
-          .tab {
-              cursor: pointer;
-              padding: 5px 20px;
-              border: 2px solid #ccc;
-              border-radius: 5px;
-              background-color: #f4f4f4;
-          }
+    #platform-title {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
 
-          .tab:hover {
-              background-color: #ddd;
-          }
+    #platform-subtitle {
+        margin-bottom: 20px;
+    }
 
-          #image-row {
-              margin-top: 30px;
-              display: flex;
-          }
+    /* 搜索框样式 */
+    .search-box {
+        display: flex;
+        justify-content: center;
+    }
 
-          .gjs-cell {
-              flex: 1;
-              padding: 10px;
-          }
+    #search-input {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        min-width: 200px;
+    }
 
-          img {
-              max-width: 100%;
-              display: block;
-              margin: 0 auto;
-          }
+    #search-button {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px 15px;
+        background-color: #555;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+    }
 
-          </style>
-          `
+    #search-button:hover {
+        background-color: #444;
+    }
+
+    /* 导航样式 */
+    nav {
+        background-color: #333;
+    }
+
+    .tab-container {
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+    }
+
+    .tab {
+        cursor: pointer;
+        padding: 10px 20px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #444;
+        color: #fff;
+    }
+
+    .tab:hover {
+        background-color: #333;
+    }
+
+    /* 图片部分样式 */
+    .image-section {
+        margin-top: 30px;
+    }
+
+    .image-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .image {
+        flex: 1;
+    }
+
+    .image img {
+        max-width: 100%;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* 页脚样式 */
+    footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+    }
+</style>
+
+</html>`
             },
             {
               id: 't2',
@@ -1620,8 +1671,7 @@ textarea {
 }
 </script>
 
-<style scoped>
-#gjs * {
+<style scoped>#gjs * {
   font-family: sans-serif !important;
 }
 
@@ -1910,7 +1960,6 @@ textarea {
   visibility: visible;
 }
 
-:deep(.gjs-title){
+:deep(.gjs-title) {
   font-weight: bold;
-}
-</style>  
+}</style>  

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学术成果分享平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div id="login-button">登录</div>
+                <div id="register-button">注册</div>
+            </div>
+            <div class="header-content">
+                <h1>学术成果分享平台</h1>
+                <h2>Make Academia Visible</h2>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="搜索">
+                    <button type="button" id="search-button">搜索</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul class="tab-container">
+                <li class="tab" data-tab="tab1">业界精英</li>
+                <li class="tab" data-tab="tab2">学术论文</li>
+                <li class="tab" data-tab="tab3">科技前沿</li>
+                <li class="tab" data-tab="tab4">最新成果</li>
+                <li class="tab" data-tab="tab5">新闻资讯</li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="image-section">
+        <div class="container">
+            <div class="image-grid">
+                <div class="image">
+                    <img src="/src/assets/template1-4.jpg" alt="Image 1">
+                </div>
+                <div class="image">
+                    <img src="/src/assets/template1-3.jpg" alt="Image 2">
+                </div>
+                <div class="image">
+                    <img src="/src/assets/template1-2.jpg" alt="Image 3">
+                </div>
+                <div class="image">
+                    <img src="/src/assets/template1-5.jpg" alt="Image 4">
+                </div>
+                <div class="image">
+                    <img src="/src/assets/template1-1.jpg" alt="Image 5">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tab-content" id="tab1-content"></section>
+    <section class="tab-content" id="tab2-content"></section>
+    <section class="tab-content" id="tab3-content"></section>
+    <section class="tab-content" id="tab4-content"></section>
+    <section class="tab-content" id="tab5-content"></section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 学术成果分享平台</p>
+        </div>
+    </footer>
+</body>
+<style>
+    /* 重置全局样式 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: all 0.5s;
+    }
+
+    /* 响应式断点 */
+    @media screen and (max-width: 768px) {
+        /* 在这里添加响应式样式 */
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #c2cedc;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* 头部样式 */
+    header {
+        background-color: #686789;
+        color: #ffffff;
+        padding: 20px 0;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+
+    #login-button,
+    #register-button {
+        margin-top: 8px;
+        margin-right: 20px;
+        padding: 10px;
+        cursor: pointer;
+        color: #ffffff;
+    }
+
+    #login-button:hover,
+    #register-button:hover {
+        background-color: #555;
+    }
+
+    .header-content {
+        text-align: center;
+    }
+
+    #platform-title {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+
+    #platform-subtitle {
+        margin-bottom: 20px;
+    }
+
+    /* 搜索框样式 */
+    .search-box {
+        display: flex;
+        justify-content: center;
+    }
+
+    #search-input {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        min-width: 200px;
+    }
+
+    #search-button {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px 15px;
+        background-color: #555;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    #search-button:hover {
+        background-color: #444;
+    }
+
+    /* 导航样式 */
+    nav {
+        background-color: #333;
+    }
+
+    .tab-container {
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+    }
+
+    .tab {
+        cursor: pointer;
+        padding: 10px 20px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #444;
+        color: #fff;
+    }
+
+    .tab:hover {
+        background-color: #333;
+    }
+
+    /* 图片部分样式 */
+    .image-section {
+        margin-top: 30px;
+    }
+
+    .image-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .image {
+        flex: 1;
+    }
+
+    .image img {
+        max-width: 100%;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* 页脚样式 */
+    footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+    }
+</style>
+
+</html>
