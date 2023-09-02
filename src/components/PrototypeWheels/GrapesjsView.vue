@@ -126,6 +126,7 @@ import ScriptPlugin from 'grapesjs-script-editor'; //js代码编辑
 import html2canvas from 'html2canvas';
 import 'animate.css'
 import PageSelect from './PageSelect.vue';
+import { dataTableInjectionKey } from 'naive-ui/es/data-table/src/interface';
 
 export default {
   name: 'GrapesEditor',
@@ -190,15 +191,23 @@ export default {
     })
     this.ws = new WebSocket(`ws://43.138.14.231:9000/ws/page/${this.pageId}/`)
 
-
     //必须在editor加载完之后才添加点击事件监听
 
     // window.removeEventListener()
     this.ws.onmessage = (message) => {
-    	const data = JSON.parse(message.data).data
-    	if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
-    		this.editor.loadProjectData(data)
-    	}
+      console.log('收到消息')
+      const data = JSON.parse(message.data).data
+      const cursorId = JSON.parse(message.data).cursor_id
+      const userId = JSON.parse(message.data).user_id
+      const username = JSON.parse(message.data).username
+      if (data !== undefined && data !== {} & data !== null) {
+        if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
+          this.editor.loadProjectData(data)
+        }
+      }
+      if (cursorId && userId && username) {
+        this.updateCursorPlace(userId, username, cursorId)
+      }
     }
 
     //设置默认大小
@@ -209,7 +218,7 @@ export default {
       ws: '',
       pageId: null,
       pageName: 'page1',
-      selectedIds: undefined,//当前用户选中的元素的id
+      selectedId: undefined,//当前用户选中的元素的id
       pagesNum: 1,
       canvasHeight: '1000',
       canvasWidth: '1000',
@@ -1518,11 +1527,16 @@ button {
 
               onStore: data => {
                 console.log('store')
-                this.updateCursorPlace(this.selectedId)//自动保存时更新id
+                // this.updateCursorPlace(this.selectedId)//自动保存时更新id
                 if (data.pages.length == 0) {
                   data.pages.push({})
                 }
-                this.ws.send(JSON.stringify(data))
+                this.ws.send(JSON.stringify({
+                  "data": data,
+                  "cursor_id": this.selectedId,
+                  "user_id": this.$cookies.get('user_id'),
+                  "username": this.$cookies.get('username')
+                }))
                 return {
                   id: this.pageId,
                   data,
@@ -1733,38 +1747,56 @@ textarea {
       else {
         this.selectedId = e.target.id//只有这时候刷新？
       }
-      this.updateCursorPlace(this.selectedId)
+      console.log(e.target.id)
+      // this.updateCursorPlace(this.selectedId)
+      this.ws.send(JSON.stringify({
+        "data": {},
+        "cursor_id": this.selectedId,
+        "user_id": this.$cookies.get('user_id'),
+        "username": this.$cookies.get('username')
+      }))
+      console.log('发送ws')
     },
     //元素滚动，此时只需要刷新位置
     handleScroll(e) {
-      this.updateCursorPlace(this.selectedId)
+      // this.updateCursorPlace(this.selectedId)
+      this.ws.send(JSON.stringify({
+        "data": {},
+        "cursor_id": this.selectedId,
+        "user_id": this.$cookies.get('user_id'),
+        "username": this.$cookies.get('username')
+      }))
     },
-    updateCursorPlace(id) {
+    updateCursorPlace(userId, username, cursorId) {
       //刷新光标位置
       // 首先将前面的悬浮框和框框清除
-      document.querySelector('.selection-tooltip-container')?.remove()
-      document.querySelector('.selection-tooltip-text')?.remove()
-      document.querySelector('.selection-wrapper')?.remove()
-      if (id === undefined || id === '') {//这时什么都不做？
+      console.log('receive cursorId'+cursorId)
+      document.querySelector(`.selection-tooltip-container-${userId}`)?.remove()
+      document.querySelector(`.selection-tooltip-text-${userId}`)?.remove()
+      document.querySelector(`.selection-wrapper-${userId}`)?.remove()
+      if (cursorId === undefined || cursorId === '') {//这时什么都不做？
         return
       }
       else {
         // 这里可以处理用户在 iframe 内点击内容的逻辑
         console.log('用户点击了 iframe 内的内容');
-        const element = document.querySelector('iframe').contentWindow.document.body.querySelector(`#${id}`)
+        const element = document.querySelector('iframe').contentWindow.document.body.querySelector(`#${cursorId}`)
+        console.log(element)
         if (element) {
           // 创建悬浮框容器
           const tooltipContainer = document.createElement('div');
-          tooltipContainer.className = `selection-tooltip-container`;//TODO:类名要改为独一无二
+          tooltipContainer.className = `selection-tooltip-container-${userId}`;//TODO:类名要改为独一无二
           tooltipContainer.style.pointerEvents = 'none'//设置不能被选中
 
           tooltipContainer.style.backgroundColor = 'rgb(199, 29, 35)';
           tooltipContainer.style.color = 'white';
+          tooltipContainer.style.borderRadius = '8px 8px 8px 0px'
+          tooltipContainer.style.padding = '5px 10px'
 
           // 设置悬浮框内容
           const tooltipText = document.createElement('div');
-          tooltipText.className = `selection-tooltip-text`;//TODO:类名要改为独一无二
-          tooltipText.textContent = '这是一个tooltip';
+          tooltipText.className = `selection-tooltip-text-${userId}`;//TODO:类名要改为独一无二
+          tooltipText.textContent = username;
 
           // 将悬浮框内容添加到容器
           tooltipContainer.appendChild(tooltipText);
@@ -1791,7 +1823,7 @@ textarea {
           //接下来再设置一个方框
           // 创建一个包裹元素的容器 这里为了方便直接设为borderbox
           const wrapperDiv = document.createElement('div');
-          wrapperDiv.className = `selection-wrapper`;//TODO:类名要改为独一无二
+          wrapperDiv.className = `selection-wrapper-${userId}`;//TODO:类名要改为独一无二
           wrapperDiv.style.boxSizing = 'border-box'
           wrapperDiv.style.pointerEvents = 'none'//穿透元素
           // 获取被包裹元素的位置和大小
@@ -1808,7 +1840,7 @@ textarea {
           document.body.appendChild(wrapperDiv);
 
           // 为包裹容器设置边框样式,颜色和tooltip保持一致
-          wrapperDiv.style.border = `5px solid rgb(199,29,35)`;
+          wrapperDiv.style.border = `3px solid rgb(199,29,35)`;
         }
       }
     },
