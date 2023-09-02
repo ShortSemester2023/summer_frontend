@@ -13,20 +13,23 @@
     <button class="line-btn" @click="clickSearchRecordModal">
       查找聊天记录
     </button>
-    <!-- <div class="group-name">
-      <input type="text" v-model="rename">
-      <button @click="confirmRenameGroup">重命名确认按钮</button>
-    </div> -->
     <div class="quit">
-      <button @click="showInviteNewMember">邀请新成员</button>
-      <button @dblclick="handleQuitGroup" v-tooltip="'双击以确认退出群聊'">
-        退出群聊
-      </button>
-      <button @click="handleDisbandGroup">解散群聊</button>
-      
+      <template v-if="!isDefault">
+        <template v-if="$cookies.get('user_id') == groupLeader">
+          <button @click="showInviteNewMember">邀请新成员</button>
+          <button @click="handleDisbandGroup">解散群聊</button>
+        </template>
+        <template v-else>
+          <button @dblclick="handleQuitGroup" v-tooltip="'双击以确认退出群聊'">
+            退出群聊
+          </button>
+        </template>
+      </template>
     </div>
-    <SearchRecordModal :show="showSearchRecordModal" :groupId="groupId" @close="showSearchRecordModal = false"></SearchRecordModal>
-    <InviteNewMemberModal :show="showInviteNewMemberModal" :groupId="groupId" @close="showInviteNewMemberModal = false"></InviteNewMemberModal>
+    <SearchRecordModal :show="showSearchRecordModal" :groupId="groupId" @close="showSearchRecordModal = false">
+    </SearchRecordModal>
+    <InviteNewMemberModal :show="showInviteNewMemberModal" :groupId="groupId" @close="showInviteNewMemberModal = false">
+    </InviteNewMemberModal>
   </div>
   <!-- </StylishModal> -->
 </template>
@@ -47,12 +50,14 @@ export default {
       rename: '',
       showSearchRecordModal: false, // 展示搜索聊天记录的模态框
       showInviteNewMemberModal: false, // 展示邀请新成员的模态框
-      isShowing: false
+      isShowing: false,
+      groupLeader: null,
+      isDefault: false
     }
   },
   mounted() {
     this.$bus.on('showGroupDetail', () => {
-      this.isShowing  = true
+      this.isShowing = true
       const div = document.getElementById('temp')
       div.style.display = 'block'
       // this.$refs.container.style.display = 'block'
@@ -65,7 +70,7 @@ export default {
       document.addEventListener('click', this.close)
     })
     this.$bus.on('hideGroupDetail', () => {
-      this.isShowing  = false
+      this.isShowing = false
       const div = document.getElementById('temp')
       div.classList.add('slide-hide')
       // this.$refs.container.classList.add('slide-hide')
@@ -92,7 +97,22 @@ export default {
           this.groupAvatar = response.data.avatar
           this.groupName = response.data.name
         }
-      )
+      ),
+        this.$http.get(`/api/groups/find/${this.groupId}/`).then(
+          response => {
+            console.log(this.groupId);
+            this.groupLeader = response.data.id
+            console.log(this.groupLeader);
+          }
+        ),
+        this.$http.get(`/api/groups/${this.groupId}/is_default/`).then(
+          response => {
+            this.isDefault = response.data.is_default
+          },
+          error => {
+            console.log(error.message)
+          }
+        )
     },
     confirmRenameGroup() {
       if (this.rename.trim() == '') {
@@ -136,7 +156,7 @@ export default {
         response => {
           this.$bus.emit('roomOption', JSON.stringify({
             'option': 'quit',
-            'group_data': {'id': this.groupId, 'user_id': this.$cookies.get('user_id')}
+            'group_data': { 'id': this.groupId, 'user_id': this.$cookies.get('user_id') }
           }))
           this.$bus.emit('message', {
             title: '退出群聊成功',
@@ -158,7 +178,7 @@ export default {
         response => {
           this.$bus.emit('roomOption', JSON.stringify({
             'option': 'delete',
-            'group_data': {'id': this.groupId}
+            'group_data': { 'id': this.groupId }
           }))
           this.$bus.emit('message', {
             title: '解散群聊成功',
@@ -221,7 +241,7 @@ export default {
   font-size: 18px;
   font-weight: bold;
   text-align: center;
-  color: rgba(199,29,35, 1);
+  color: rgba(199, 29, 35, 1);
   margin: 10px auto;
   max-width: 240px;
   word-break: break-all;
@@ -236,12 +256,13 @@ input {
   border-radius: 5px;
   box-sizing: border-box;
   font-size: 18px;
-  caret-color: rgba(199,29,35, 1);
-  border: 1px solid rgba(199,29,35, 1);
+  caret-color: rgba(199, 29, 35, 1);
+  border: 1px solid rgba(199, 29, 35, 1);
   padding: 5px;
 }
+
 input:focus-visible {
-  outline: 2px solid rgba(199,29,35, 1);
+  outline: 2px solid rgba(199, 29, 35, 1);
 }
 
 .input-hint {
@@ -265,11 +286,13 @@ button.line-btn {
   transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
   border-radius: 5px;
 }
+
 button.line-btn:first-of-type {
   border-top: 1px solid lightgrey;
 }
+
 button.line-btn:hover {
-  background: rgba(199,29,35, 1);
+  background: rgba(199, 29, 35, 1);
   color: white;
 }
 
@@ -304,17 +327,18 @@ button.line-btn:hover {
   margin: 5px 20px;
   box-sizing: border-box;
   background: transparent;
-  border: 1px solid rgba(199,29,35, 1);
+  border: 1px solid rgba(199, 29, 35, 1);
   font-size: 18px;
   border-radius: 5px;
   /* font-weight: lighter; */
-  color: rgba(199,29,35, 1);
+  color: rgba(199, 29, 35, 1);
   cursor: pointer;
   transition: 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
+
 .quit button:hover {
   box-sizing: content-box;
-  background: rgba(199,29,35, 1);
+  background: rgba(199, 29, 35, 1);
   color: white;
   font-weight: bold;
 
@@ -337,5 +361,4 @@ button.line-btn:hover {
 .slide-hide {
   animation: popout .2s ease reverse forwards;
 }
-
 </style>

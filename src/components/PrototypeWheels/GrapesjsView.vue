@@ -194,12 +194,12 @@ export default {
     //必须在editor加载完之后才添加点击事件监听
 
     // window.removeEventListener()
-    // this.ws.onmessage = (message) => {
-    // 	const data = JSON.parse(message.data).data
-    // 	if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
-    // 		this.editor.loadProjectData(data)
-    // 	}
-    // }
+    this.ws.onmessage = (message) => {
+    	const data = JSON.parse(message.data).data
+    	if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
+    		this.editor.loadProjectData(data)
+    	}
+    }
 
     //设置默认大小
     // this.closeCategory();
@@ -1681,11 +1681,11 @@ textarea {
     },
     shareLink() {
       this.$http.get(`/api/projects/${this.pageId}/generate_invite_url/page/`).then((response) => {
-        navigator.clipboard.writeText(response.data.url)
+        // navigator.clipboard.writeText(response.data.url)
         this.$bus.emit('message', {
-          title: '邀请链接已复制到剪切板',
+          title: '复制链接，即刻预览',
           content: response.data.url,
-          time: 3000
+          time: 5000
         })
       })
     },

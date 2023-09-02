@@ -142,9 +142,9 @@ export default {
     shareDocLink() {
       this.$http.get(`/api/projects/${this.doc.id}/generate_invite_url/`).then(
         response => {
-          this.link = response.data.url // 
-          navigator.clipboard.writeText(this.link)
-          this.$bus.emit('message', { title: '分享链接已复制到剪贴板', content: this.link, time: 5000 })
+          this.link = response.data.url 
+          // navigator.clipboard.writeText(this.link)
+          this.$bus.emit('message', { title: '复制链接，即刻协作', content: this.link, time: 5000 })
         },
         error => {
           console.log(error.message)

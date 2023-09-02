@@ -24,7 +24,7 @@
             <div class="time">{{ record.createDatetime }}</div>
           </div>
           <div>
-            <div>{{ record.textContent }}</div>
+            <div v-html="record.textContent"></div>
             <button @click="locateToMessage(record.id)">定位到聊天位置</button>
           </div>
           
@@ -145,6 +145,7 @@ input {
   margin: 0 auto;
   display: flex;
   justify-content: center;
+  align-content: flex-start;
   flex-wrap: wrap;
   overflow-y: auto;
 }

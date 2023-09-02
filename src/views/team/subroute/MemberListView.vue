@@ -198,9 +198,9 @@ export default {
       this.$http.get(`/api/teams/${this.teamId}/generate_invite_url/`).then(
         response => {
           this.inviteUrl = response.data.url
-          navigator.clipboard.writeText(this.inviteUrl)
+          // navigator.clipboard.writeText(this.inviteUrl)
           this.$bus.emit('message', {
-            title: '链接已复制到剪贴板',
+            title: '复制链接，即刻分享',
             content: this.inviteUrl,
             time: 5000
           })
