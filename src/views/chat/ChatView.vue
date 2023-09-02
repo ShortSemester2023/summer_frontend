@@ -56,76 +56,77 @@ export default {
 				this.handleJoinRoom(data)
 			}
 		}
-		this.$http.get(`/api/groups/list_by_team_id/?team_id=${this.$route.params.teamId}`).then((response) => {
-			// rooms
-			this.rooms = response.data.map((group, index) => ({
-				index: -index,
-				roomId: group.id,
-				roomName: group.is_private ? (
-					group.members[0].user.id == this.currentUserId ? group.members[1].user.username : group.members[0].user.username
-				) : group.name,
-				avatar: group.is_private ? (
-					group.members[0].user.id == this.currentUserId ? group.members[1].user.avatar : group.members[0].user.avatar
-				) : group.avatar,
-				unreadCount: group.unreadCount,
-				users: group.members.map((member) => ({
-					_id: `${member.user.id}`,
-					username: member.user.username
-				})),
-				lastMessage: group.lastMessage.id == null ? null : {
-					_id: group.lastMessage.id,
-					content: group.lastMessage.text_content,
-					senderId: `${group.lastMessage.sender.user.id}`,
-					username: group.lastMessage.sender.user.username,
-					avatar: group.lastMessage.sender.user.avatar,
-					timestamp: group.lastMessage.create_datetime.substring(11, 16),
-					date: group.lastMessage.create_datetime.substring(5, 10),
-					new: false,
-				},
-				is_private: group.is_private,
-				identity: group.identity
-			}))
-			if (this.rooms.length > 0) {
-				this.currentRoomId = this.rooms[0].roomId
-			}
-			this.allRooms = this.rooms
-			// @all && last_message
-			for (let i = 0; i < this.rooms.length; i++) {
-				if (this.rooms[i].identity != 'member') {
-					this.rooms[i].users = [
-						{
-							_id: '0',
-							username: '所有人'
-						},
-						...this.rooms[i].users
-					]
+		this.$http.get(`/api/groups/list_by_team_id/?team_id=${this.$route.params.teamId}`).then(
+			(response) => {
+				// rooms
+				this.rooms = response.data.map((group, index) => ({
+					index: -index,
+					roomId: group.id,
+					roomName: group.is_private ? (
+						group.members[0].user.id == this.currentUserId ? group.members[1].user.username : group.members[0].user.username
+					) : group.name,
+					avatar: group.is_private ? (
+						group.members[0].user.id == this.currentUserId ? group.members[1].user.avatar : group.members[0].user.avatar
+					) : group.avatar,
+					unreadCount: group.unreadCount,
+					users: group.members.map((member) => ({
+						_id: `${member.user.id}`,
+						username: member.user.username
+					})),
+					lastMessage: group.lastMessage.id == null ? null : {
+						_id: group.lastMessage.id,
+						content: group.lastMessage.text_content,
+						senderId: `${group.lastMessage.sender.user.id}`,
+						username: group.lastMessage.sender.user.username,
+						avatar: group.lastMessage.sender.user.avatar,
+						timestamp: group.lastMessage.create_datetime.substring(11, 16),
+						date: group.lastMessage.create_datetime.substring(5, 10),
+						new: false,
+					},
+					is_private: group.is_private,
+					identity: group.identity
+				}))
+				if (this.rooms.length > 0) {
+					this.currentRoomId = this.rooms[0].roomId
 				}
-				// WebSocket
-				this.ws[i] = new WebSocket(`ws://43.138.14.231:9000/ws/chat/group/${this.rooms[i].roomId}/${this.currentUserId}/`)
-				this.ws[i].onmessage = (messageEvent) => {
-					const data = JSON.parse(messageEvent.data)
-					if (data.option == 'send') {
-						this.handleSendMessage(i, data)
+				this.allRooms = this.rooms
+				// @all && last_message
+				for (let i = 0; i < this.rooms.length; i++) {
+					if (this.rooms[i].identity != 'member') {
+						this.rooms[i].users = [
+							{
+								_id: '0',
+								username: '所有人'
+							},
+							...this.rooms[i].users
+						]
 					}
-					else if (data.option == 'edit') {
-						this.handleEditMessage(i, data)
-					}
-					else if (data.option == 'delete') {
-						this.handleDeleteMessage(i, data)
+					// WebSocket
+					this.ws[i] = new WebSocket(`ws://43.138.14.231:9000/ws/chat/group/${this.rooms[i].roomId}/${this.currentUserId}/`)
+					this.ws[i].onmessage = (messageEvent) => {
+						const data = JSON.parse(messageEvent.data)
+						if (data.option == 'send') {
+							this.handleSendMessage(i, data)
+						}
+						else if (data.option == 'edit') {
+							this.handleEditMessage(i, data)
+						}
+						else if (data.option == 'delete') {
+							this.handleDeleteMessage(i, data)
+						}
 					}
 				}
-			}
-			this.roomsLoaded = true
-			const groupId = this.$route.query.groupId
-			if (groupId != undefined) {
-				this.selectRoom(groupId)
-				const messageId = this.$route.query.messageId
-				if (messageId != undefined) {
-					this.fetchAllMessages()
-					this.scrollToMessage(messageId)
+				this.roomsLoaded = true
+				const groupId = this.$route.query.groupId
+				if (groupId != undefined) {
+					this.selectRoom(groupId)
+					const messageId = this.$route.query.messageId
+					if (messageId != undefined) {
+						this.fetchAllMessages()
+						this.scrollToMessage(messageId)
+					}
 				}
-			}
-		})
+			})
 		// test
 		const style = document.createElement('style')
 		style.textContent = `
@@ -310,17 +311,17 @@ export default {
 		this.$bus.on('roomOption', data => this.teamws.send(data))
 
 		this.$refs.chat.shadowRoot.appendChild(style)
-		// const doc = this.$refs.chat.shadowRoot
-		// setTimeout(() => {
-		// 	let temp = doc.querySelector('.vac-rooms-empty')
-		// 	if (temp) {
-		// 		temp.innerHTML = '<div>暂无聊天室</div>'
-		// 	}
-		// 	temp = doc.querySelector('.vac-col-messages .vac-container-center.vac-room-empty')
-		// 	if (temp) {
-		// 		temp.innerHTML = '<div>未选中聊天室</div>'
-		// 	}
-		// }, 1)
+		const doc = this.$refs.chat.shadowRoot
+		setTimeout(() => {
+			let temp = doc.querySelector('.vac-rooms-empty')
+			if (temp) {
+				temp.innerHTML = '<div>暂无聊天室</div>'
+			}
+			temp = doc.querySelector('.vac-col-messages .vac-container-center.vac-room-empty')
+			if (temp) {
+				temp.innerHTML = '<div>未选中聊天室</div>'
+			}
+		}, 1)
 
 		// const newHTML = this.$refs.chat.shadowRoot.innerHTML.replace('placeholder="Search"', 'placeholder="检索"')
 		// console.log(newHTML)
