@@ -36,16 +36,22 @@ export default {
       this.$watch('$route.params', (newVal, oldVal) => {
         this.pageId = newVal.protoId
         this.$http.get(`http://43.138.14.231/projects/${this.pageId}`).then((response) => {
-          this.editor.loadProjectData(response.data.data)
+          this.initEditor();
+          this.banButton();
+          this.setPreview();
+          this.editor.on('load', () => {
+            const prv = document.querySelector('#gjs > div.gjs-editor.gjs-one-bg.gjs-two-color > span')
+            prv.style.display = 'none'
+          })
         })
       })
       this.initEditor();
       this.banButton();
       this.setPreview();
-      setTimeout(() => {
+      this.editor.on('load', () => {
         const prv = document.querySelector('#gjs > div.gjs-editor.gjs-one-bg.gjs-two-color > span')
         prv.style.display = 'none'
-      }, 2000)
+      })
     },
     methods: {
       initEditor() {

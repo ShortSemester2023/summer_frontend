@@ -156,12 +156,12 @@ export default {
       let sizeSetter = document.querySelector('#size-setter')
       topPanel.appendChild(sizeSetter)
 		this.ws = new WebSocket(`ws://43.138.14.231:9000/ws/page/${this.pageId}/`)
-		// this.ws.onmessage = (message) => {
-		// 	const data = JSON.parse(message.data).data
-		// 	if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
-		// 		this.editor.loadProjectData(data)
-		// 	}
-		// }
+		this.ws.onmessage = (message) => {
+			const data = JSON.parse(message.data).data
+			if (JSON.stringify(this.editor.getProjectData()) !== JSON.stringify(data)) {
+				this.editor.loadProjectData(data)
+			}
+		}
     
     //设置默认大小
     // this.closeCategory();
